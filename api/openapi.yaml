@@ -1,0 +1,598 @@
+openapi: 3.0.0
+info:
+  description: API for the QualDevLabs Auth library.
+  title: QualDevLabsAuth
+  version: 1.0.0
+servers:
+- url: https://qualdevlabsauth.uc.r.appspot.com/
+paths:
+  /orgs/{orgId}/apps/{appId}/users:
+    post:
+      operationId: createUser
+      parameters:
+      - description: the org's UUID (unique)
+        explode: false
+        in: path
+        name: orgId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: the app's UUID (unique)
+        explode: false
+        in: path
+        name: appId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        $ref: '#/components/requestBodies/User_Schema'
+        content:
+          application/json:
+            schema:
+              properties:
+                username:
+                  maxLength: 50
+                  minLength: 3
+                  type: string
+                password:
+                  maxLength: 64
+                  minLength: 6
+                  type: string
+                repeatPassword:
+                  maxLength: 64
+                  minLength: 6
+                  type: string
+                email:
+                  maxLength: 50
+                  minLength: 3
+                  type: string
+              required:
+              - email
+              - password
+              - repeatPassword
+              - username
+              title: User Schema
+              type: object
+        description: The user to create.
+        required: true
+      responses:
+        "201":
+          description: Created
+      security:
+      - apiKeyHeader: []
+      summary: Creates a new user.
+  /orgs/{orgId}/apps/{appId}/users/{userId}:
+    delete:
+      operationId: deleteUser
+      parameters:
+      - description: the org's UUID (unique)
+        explode: false
+        in: path
+        name: orgId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: the app's UUID (unique)
+        explode: false
+        in: path
+        name: appId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: the user's UUID (unique)
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Deleted user
+      security:
+      - passwordInHeader: []
+        apiKeyHeader: []
+      summary: Delete a user
+    patch:
+      operationId: updateImportantUserDetails
+      parameters:
+      - description: the org's UUID (unique)
+        explode: false
+        in: path
+        name: orgId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: the app's UUID (unique)
+        explode: false
+        in: path
+        name: appId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: the user's UUID (unique)
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        $ref: '#/components/requestBodies/User_updates_schema'
+        content:
+          application/json:
+            schema:
+              properties:
+                username:
+                  maxLength: 50
+                  minLength: 3
+                  type: string
+                password:
+                  maxLength: 64
+                  minLength: 6
+                  type: string
+                repeatPassword:
+                  maxLength: 64
+                  minLength: 6
+                  type: string
+                email:
+                  maxLength: 50
+                  minLength: 3
+                  type: string
+              title: User updates schema
+              type: object
+        description: updates we'd like to make
+        required: true
+      responses:
+        "204":
+          description: Updated user
+      security:
+      - passwordInHeader: []
+        apiKeyHeader: []
+      summary: Updates a user's important details
+  /orgs/{orgId}/apps/{appId}/sessions:
+    post:
+      operationId: createUserSession
+      parameters:
+      - description: the org's UUID (unique)
+        explode: false
+        in: path
+        name: orgId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: the app's UUID (unique)
+        explode: false
+        in: path
+        name: appId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        $ref: '#/components/requestBodies/Login_schema'
+        content:
+          application/json:
+            schema:
+              properties:
+                username:
+                  maxLength: 50
+                  minLength: 3
+                  type: string
+                password:
+                  maxLength: 64
+                  minLength: 6
+                  type: string
+                rememberMe:
+                  type: boolean
+              required:
+              - password
+              - rememberMe
+              - username
+              title: Login schema
+              type: object
+        description: login details
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session_Token_and_UserId'
+          description: session created
+      security:
+      - apiKeyHeader: []
+      summary: Login user
+  /orgs/{orgId}/apps/{appId}/sessions/{userId}:
+    delete:
+      operationId: deleteUserSession
+      parameters:
+      - description: the org's UUID (unique)
+        explode: false
+        in: path
+        name: orgId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: the app's UUID (unique)
+        explode: false
+        in: path
+        name: appId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: the user's UUID (unique)
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: session Deleted
+      security:
+      - tokenHeader: []
+        apiKeyHeader: []
+      summary: Logout user
+    get:
+      operationId: validateSession
+      parameters:
+      - description: the org's UUID (unique)
+        explode: false
+        in: path
+        name: orgId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: the app's UUID (unique)
+        explode: false
+        in: path
+        name: appId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: the user's UUID (unique)
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: session valid
+      security:
+      - tokenHeader: []
+        apiKeyHeader: []
+      summary: Verifies if session is valid
+  /orgs/{orgId}/apps/{appId}/password_reset_tokens:
+    post:
+      operationId: requestPasswordResetToken
+      parameters:
+      - description: the org's UUID (unique)
+        explode: false
+        in: path
+        name: orgId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: the app's UUID (unique)
+        explode: false
+        in: path
+        name: appId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        $ref: '#/components/requestBodies/UserEmailSchema'
+        content:
+          application/json:
+            schema:
+              example:
+                email: email
+              properties:
+                email:
+                  maxLength: 50
+                  minLength: 3
+                  type: string
+              required:
+              - email
+              title: UserEmailSchema
+              type: object
+        description: The email to send the password reset to.
+        required: true
+      responses:
+        "202":
+          description: password reset token created
+      security:
+      - apiKeyHeader: []
+      summary: requests a password reset token for users who have forgotten their
+        password
+  /orgs/{orgId}/apps/{appId}/forgot_username:
+    post:
+      operationId: requestForgottenUsername
+      parameters:
+      - description: the org's UUID (unique)
+        explode: false
+        in: path
+        name: orgId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: the app's UUID (unique)
+        explode: false
+        in: path
+        name: appId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        $ref: '#/components/requestBodies/UserEmailSchema_1'
+        content:
+          application/json:
+            schema:
+              properties:
+                email:
+                  maxLength: 50
+                  minLength: 3
+                  type: string
+              required:
+              - email
+              title: UserEmailSchema
+              type: object
+        description: the users email
+        required: true
+      responses:
+        "200":
+          description: Sent email to user
+      security:
+      - apiKeyHeader: []
+      summary: requests an email get sent to the user with their username
+  /orgs/{orgId}/apps/{appId}/password_reset:
+    patch:
+      operationId: forgotPasswordReset
+      parameters:
+      - description: the org's UUID (unique)
+        explode: false
+        in: path
+        name: orgId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: the app's UUID (unique)
+        explode: false
+        in: path
+        name: appId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        $ref: '#/components/requestBodies/Password_reset_schema'
+        content:
+          application/json:
+            schema:
+              properties:
+                password:
+                  maxLength: 64
+                  minLength: 6
+                  type: string
+                repeatPassword:
+                  maxLength: 64
+                  minLength: 6
+                  type: string
+                email:
+                  maxLength: 50
+                  minLength: 3
+                  type: string
+              required:
+              - email
+              - password
+              - repeatPassword
+              title: Password reset schema
+              type: object
+        description: email and new password for this account
+        required: true
+      responses:
+        "204":
+          description: password changed
+      security:
+      - tokenHeader: []
+        apiKeyHeader: []
+      summary: resets an unathenticated user's password using a token sent to their
+        email
+components:
+  requestBodies:
+    Login_schema:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Login_schema'
+      required: true
+    UserEmailSchema:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserEmailSchema'
+      required: true
+    UserEmailSchema_1:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserEmailSchema_1'
+      required: true
+    User_updates_schema:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/User_updates_schema'
+      required: true
+    User_Schema:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/User_Schema'
+      required: true
+    Password_reset_schema:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Password_reset_schema'
+      required: true
+  schemas:
+    Login_schema:
+      properties:
+        username:
+          maxLength: 50
+          minLength: 3
+          type: string
+        password:
+          maxLength: 64
+          minLength: 6
+          type: string
+        rememberMe:
+          type: boolean
+      required:
+      - password
+      - rememberMe
+      - username
+      title: Login schema
+      type: object
+    UserEmailSchema:
+      example:
+        email: email
+      properties:
+        email:
+          maxLength: 50
+          minLength: 3
+          type: string
+      required:
+      - email
+      title: UserEmailSchema
+      type: object
+    Session_Token_and_UserId:
+      example:
+        userId: userId
+        token: token
+      properties:
+        userId:
+          type: string
+        token:
+          type: string
+      required:
+      - token
+      - userId
+      title: Session Token and UserId
+      type: object
+    UserEmailSchema_1:
+      properties:
+        email:
+          maxLength: 50
+          minLength: 3
+          type: string
+      required:
+      - email
+      title: UserEmailSchema
+      type: object
+    User_updates_schema:
+      properties:
+        username:
+          maxLength: 50
+          minLength: 3
+          type: string
+        password:
+          maxLength: 64
+          minLength: 6
+          type: string
+        repeatPassword:
+          maxLength: 64
+          minLength: 6
+          type: string
+        email:
+          maxLength: 50
+          minLength: 3
+          type: string
+      title: User updates schema
+      type: object
+    User_Schema:
+      properties:
+        username:
+          maxLength: 50
+          minLength: 3
+          type: string
+        password:
+          maxLength: 64
+          minLength: 6
+          type: string
+        repeatPassword:
+          maxLength: 64
+          minLength: 6
+          type: string
+        email:
+          maxLength: 50
+          minLength: 3
+          type: string
+      required:
+      - email
+      - password
+      - repeatPassword
+      - username
+      title: User Schema
+      type: object
+    Password_reset_schema:
+      properties:
+        password:
+          maxLength: 64
+          minLength: 6
+          type: string
+        repeatPassword:
+          maxLength: 64
+          minLength: 6
+          type: string
+        email:
+          maxLength: 50
+          minLength: 3
+          type: string
+      required:
+      - email
+      - password
+      - repeatPassword
+      title: Password reset schema
+      type: object
+  securitySchemes:
+    tokenHeader:
+      description: Session token header
+      in: header
+      name: token
+      type: apiKey
+    passwordInHeader:
+      description: User password header
+      in: header
+      name: password
+      type: apiKey
+    apiKeyHeader:
+      description: General access api key
+      in: header
+      name: x-api-key
+      type: apiKey
